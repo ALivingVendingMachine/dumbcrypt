@@ -2,7 +2,7 @@ package main
 
 import (
   "testing"
-  "cryptoFuncs"
+  "dumbcrypt/cryptoFuncs"
 )
 
 func TestFastMod(t *testing.T)  {
