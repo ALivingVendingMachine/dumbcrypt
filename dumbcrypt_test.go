@@ -88,12 +88,12 @@ var rabinMillerTests = []struct {
   witness int
   out bool
 } {
-  {6, 2, false},
-  {7, 2, true},
-  {3215031751, 2, true},
-  {3215031751, 3, true},
-  {3215031751, 5, true},
-  {3215031751, 11, false},
+  {6, 2, false}, // 1
+  {7, 2, true}, // 2
+  {3215031751, 2, true}, // 3
+  {3215031751, 3, true}, // 4
+  {3215031751, 5, true}, // 5
+  {3215031751, 11, false}, // 6
 }
 
 func TestRabinMiller(t *testing.T)  {
