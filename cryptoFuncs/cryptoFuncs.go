@@ -1,5 +1,8 @@
+// This package implements RSA and some utility functions.
 package cryptoFuncs
 
+// FastModExp is a fast exponent mod some value.  It computes base^exp (mod mod)
+// in a fast manner.
 func FastModExp(base int, exp int, mod int) int {
   var ret int = 1
 
@@ -14,6 +17,9 @@ func FastModExp(base int, exp int, mod int) int {
   return ret
 }
 
+// XGCD is the extended euclidean algorithm, which, given 2 values, returns the
+// gcd, then two values such that a(oldS) + b(oldT) = oldR.  In this case, oldR
+// is the gcd.
 func XGCD(a int, b int) (int, int, int) {
   var s int = 0
   var t int = 1
@@ -41,6 +47,9 @@ func XGCD(a int, b int) (int, int, int) {
   return oldR, oldS, oldT
 }
 
+// ModInvers: given a value, a, and a modulo, mod, returns the multiplicative
+// inverse of a.  What that means is that the result times a should equal 1 modulo
+// the mod value.
 func ModInverse(a int, mod int) int {
   gcd, s, _ := XGCD(a, mod)
 
@@ -55,34 +64,41 @@ func ModInverse(a int, mod int) int {
   return s
 }
 
+// The Rabin-Miller Primality test.  Given some value, n, it checks if n is
+// prime with a as a witness. (Note that this is a probablistic test, and so
+// when we use it we have to call it a great number of times)
 func RabinMillerPrimality(n int, a int) bool {
   gcd, _, _ := XGCD(n, a)
   if (n % 2 == 0 || gcd != 1) {
     return false
   }
 
-  var k, q, holdN int = 0, 0, 0
+  var r, d, holdN int = 0, 0, 0
   holdN = n - 1
 
-  for (holdN % 2 == 0) {
-    k += 1
-    q = holdN / 2
-    holdN = q
-  }
+  var x int = FastModExp(a, n, n)
 
-  a = FastModExp(a, q, n)
-  if (a == 1 || a == n - 1) {
+  if (x == 1 || x == n - 1) {
     return true
   }
 
-  for (a != n - 1) {
-    a = FastModExp(a, 2, n)
-    if (a == n-1) {
-      return true
-    }
-    if (a == 1) {
+  for (holdN % 2 == 0) {
+    r += 1
+    d = holdN / 2
+    holdN = d
+  }
+
+  for (r != 0) {
+    x = (x * x) % n
+
+    if (x == 1) {
       return false
     }
+    if (x == -1) {
+      return true
+    }
+
+    r -= 1
   }
 
   return false

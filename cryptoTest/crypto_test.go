@@ -118,22 +118,42 @@ func TestRabinMiller(t *testing.T)  {
 
   var a bool = cryptoFuncs.RabinMillerPrimality(6, 2)
 
-  t.Log("Is 6 prime with 2 as a witness")
+  t.Log("Is 6 prime with 2 as a witness? ", a)
   if (a) {
-    t.Errorf("a should be false")
+    t.Errorf("should be false")
   }
 
   a = cryptoFuncs.RabinMillerPrimality(7, 2)
 
-  t.Log("Is 7 prime with 2 as a witness")
+  t.Log("Is 7 prime with 2 as a witness? ", a)
   if (!a) {
-    t.Errorf("a should be true")
+    t.Errorf("should be true")
   }
 
+  // 3215031751 is composite, but the only witness less than like, 100 is 11
+  // so I'm gonna use it as a test case a bunch of times
   a = cryptoFuncs.RabinMillerPrimality(3215031751, 2)
 
-  t.Log("Is 3215031751 prime with 2 as a witness")
+  t.Log("Is 3215031751 prime with 2 as a witness? ", a)
+  if (!a) {
+    t.Errorf("should be true")
+  }
+  a = cryptoFuncs.RabinMillerPrimality(3215031751, 3)
+
+  t.Log("Is 3215031751 prime with 3 as a witness? ", a)
+  if (!a) {
+    t.Errorf("should be true")
+  }
+  a = cryptoFuncs.RabinMillerPrimality(3215031751, 5)
+
+  t.Log("Is 3215031751 prime with 5 as a witness? ", a)
+  if (!a) {
+    t.Errorf("should be true")
+  }
+  a = cryptoFuncs.RabinMillerPrimality(3215031751, 11)
+
+  t.Log("Is 3215031751 prime with 11 as a witness? ", a)
   if (a) {
-    t.Errorf("a should be false")
+    t.Errorf("should be false")
   }
 }
