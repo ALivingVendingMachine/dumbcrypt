@@ -1,20 +1,42 @@
 // This package implements RSA and some utility functions.
-package cryptoFuncs
+package dumbcrypt
+
+import "math/big"
 
 // FastModExp is a fast exponent mod some value.  It computes base^exp (mod mod)
 // in a fast manner.
 func FastModExp(base int, exp int, mod int) int {
-  var ret int = 1
+  var bigBase *big.Int = new(big.Int).SetInt64(int64(base))
+  var bigExp *big.Int = new(big.Int).SetInt64(int64(exp))
+  var bigMod *big.Int = new(big.Int).SetInt64(int64(mod))
+  var ret *big.Int = new(big.Int)
 
-  for exp != 0 {
-    if (exp % 2 == 1) {
-      ret *= base
-      ret = ret % mod
-    }
-    exp = exp / 2
-    base = (base * base) % mod
+  ret.Exp(bigBase, bigExp, bigMod)
+
+  if (!ret.IsInt64() || ret.Int64() < 0) {
+    panic("FastModExp failed!")
   }
-  return ret
+
+  return int(ret.Int64())
+
+  // So this is bad form, but I spent time writing this so you get to spend time
+  // reading it.  This is the logic for doing fast mod exponentiation in Go.
+  // I'm not going to use this, because even for pretty small numbers, it will
+  // overflow. (The biggest value that it could possibly run is as long as two
+  // ints multiplied, which is HUGE, so I had to switch to math/big)
+
+  // var ret int
+
+  // for exp != 0 {
+  //   if (exp % 2 == 1) {
+  //     ret *= bigBase
+  //     ret = ret % mod
+  //   }
+  //   exp = exp / 2
+  //   bigBase = bigBase * bigBase % mod
+  // }
+
+  // return int(ret)
 }
 
 // XGCD is the extended euclidean algorithm, which, given 2 values, returns the
@@ -76,19 +98,19 @@ func RabinMillerPrimality(n int, a int) bool {
   var r, d, holdN int = 0, 0, 0
   holdN = n - 1
 
-  var x int = FastModExp(a, n, n)
-
-  if (x == 1 || x == n - 1) {
-    return true
-  }
-
   for (holdN % 2 == 0) {
     r += 1
     d = holdN / 2
     holdN = d
   }
 
-  for (r != 0) {
+  var x int = FastModExp(a, d, n)
+
+  if (x == 1 || x == n - 1) {
+    return true
+  }
+
+  for (r != -1) {
     x = (x * x) % n
 
     if (x == 1) {
